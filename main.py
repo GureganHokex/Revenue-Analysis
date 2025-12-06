@@ -61,45 +61,32 @@ def adding_income():
         except ValueError:
             print(f'Ошибка значения!')
     else:
-        return 
-
-#Функция изменения данных в сохраненном файле сначало выбирается файл, затем изменяются данные 
-
-#Цикл для ввода данных
-while True: 
-    
+        return
+#Функция ввод данных 
+def input_data():
     shifts = input('Смен:').strip()
     rate_per_shifts = input('Ставка:').strip()
     try:
         shifts_val = float(shifts)
         rps = float(rate_per_shifts)
         income = shifts_val * rps
-        
-        # Получаем расходы для этой смены
-        shift_expenses = get_expenses()
-        
-        # Расчет общей суммы расходов за смену
-        total_expenses = sum(expense[1] for expense in shift_expenses)
-        
-        # Сохраняем данные
+        shifts_expenses = get_expenses()
+        total_expenses = sum(expense[1] for expense in shifts_expenses)
         shifts_list.append(shifts_val)
         rate_per_shifts_list.append(rps)
         incomes.append(income)
-        
-        # Добавляем расходы в общий список
-        for expense in shift_expenses:
+        for expense in shifts_expenses:
             fc.expenses_create(expenses,expense[0], expense[1])
-        
         print(f'Ваш доходик, без расходов {income}')
         print(f'Ваши расходы {expenses}')
         print(f'Ваш доход с учетом расходов {income - total_expenses}')
         print(f'Всего расходов в списке: {len(expenses)}\n')
-
     except ValueError:
-        print("Что-то не так, какое-то неверное значение вы ввели!")
+        print(f'Ошибка значения!')
     adding_income()
     continue_work = input(f'Хотите продолжить и перейти к файлам? (Y/N) ').lower().strip()
-    if continue_work in work_yes:#Условие если не выполняется начинается функция по созданию файла
+    if continue_work in work_yes:
         fc.files_create(month_name, shifts_list, rate_per_shifts_list, incomes, expenses)
     else:
-        break
+        return
+input_data()
