@@ -27,6 +27,26 @@ another_incomes = []  # иные доходы(чай и тп)
 
 
 class Expenses:  # Класс для трат
+    """Представляет одну запись расхода.
+
+    Атрибуты
+    ----------
+    for_what : str
+        Краткое описание или категория расхода (например: 'аренда', 'кофе').
+    how_much : int | float
+        Потраченная сумма. Ожидается числовой тип (int или float). Для денежных значений
+        можно рассмотреть использование decimal.Decimal, чтобы избежать ошибок округления.
+
+    Методы
+    -------
+    __str__():
+        Возвращает человекочитаемое представление расхода в формате 'for_what - how_much'.
+
+    Примечания
+    -------
+    Этот класс является лёгким контейнером и не выполняет валидацию переданных значений
+    (например, на неотрицательность суммы или непустую строку описания).
+    """
     def __init__(self, for_what, how_much):
         self.for_what = for_what
         self.how_much = how_much
@@ -37,18 +57,36 @@ class Expenses:  # Класс для трат
 
 
 class Shifts:  # Класс для смен
-    def __init__(self, shifts_val, rps, expenses_list, total_expenses, income):
+    """
+    Представляет рабочую смену с её доходами и расходами.
+
+    Параметры
+    ----------
+    shifts_val : Any
+        Идентификатор или метка смены (например: дата, номер смены или описательная строка).
+    rps : float | int
+        Доход за смену (или другой числовой показатель дохода), связанный со сменой.
+    shift_expenses : Sequence[Expenses] | None
+        Итерация объектов Expenses, описывающих отдельные статьи расходов для смены.
+        Каждый элемент ожидается с реализацией __str__ для читаемого представления.
+    total_expenses : float | int
+        Суммарная сумма расходов за смену.
+    income : float | int
+        Доход за смену (например, выручка до вычета расходов или итоговый доход).
+
+    Примечания
+    -------
+    - Класс сохраняет переданные значения в атрибутах с теми же именами.
+    - Реализация __str__ формирует однострочное, человеко-читаемое сводное представление:
+      "<shifts_val> - <rps> - [<expense1>, <expense2>, ...] - <total_expenses> - <income>",
+      где каждое expense преобразуется с помощью собственного __str__.
+    """
+    def __init__(self, shifts_val, rps, shift_expenses, total_expenses, income):
         self.shifts_val = shifts_val
         self.rps = rps
-        self.expenses = expenses_list
+        self.shift_expenses = shift_expenses
         self.total_expenses = total_expenses
         self.income = income
-
-    def __str__(self):
-        """Строковое представление смены. Расходы форматируются через __str__ каждого Expenses."""
-        # Если expenses — список объектов Expenses, str(e) вернёт корректную строку благодаря __str__ в Expenses
-        expenses_str = ', '.join(str(e) for e in self.expenses) if self.expenses else ''
-        return f"{self.shifts_val} - {self.rps} - [{expenses_str}] - {self.total_expenses} - {self.income}"
 
 month_data = datetime.now().month  # Месяц в виде числа
 month_name = calendar.month_name[month_data].lower()  # Месяц в виде строки
